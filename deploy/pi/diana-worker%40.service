@@ -1,0 +1,15 @@
+[Unit]
+Description=Diana planets.nu workflow worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/home/%i/Diana
+ExecStart=/home/%i/Diana/deploy/pi/run.sh
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
