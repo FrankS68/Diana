@@ -9,6 +9,30 @@ widersprechende Befunde und widerlegte Falschaussagen.
 
 **Das verbindliche Agenten-Prompt steht in [`PROMPT.md`](PROMPT.md).**
 
+## Einrichtung (einmalig, als `frank` auf dem PI)
+
+```bash
+cd <Pfad zum Repo-Klon>
+./deploy/setup-diana.sh            # interaktiv (fragt URL, API-Key, AGENT_CMD ab)
+# oder nicht-interaktiv:
+KNOWNET_URL=http://spiekeroog.fritz.box:8082 \
+KNOWNET_API_KEY=... AGENT_CMD='claude -p "$(cat PROMPT.md)"' \
+./deploy/setup-diana.sh
+```
+
+Das Script [`deploy/setup-diana.sh`](deploy/setup-diana.sh) ist idempotent:
+- legt Benutzer `diana` und alle Verzeichnisse an, falls fehlend,
+- kopiert `PROMPT.md` aus dem Repo nach `/home/diana/agenten/diana/`,
+- sucht `knownet.py` (Python-Umgebungsvariable `KNOWNET_PY`, Repo-Ordner, oder
+  Kalliopes Verzeichnis `/home/claudine/agenten/kalliope/knownet.py`),
+- legt `logbuch.md` nur an, wenn es noch nicht existiert (bestehendes Logbuch
+  wird nie angetastet),
+- schreibt `agent.env` (0600) mit KNOWNET_URL / KNOWNET_API_KEY / AGENT_CMD
+  (der API-Key landet nur dort – nie im Repo oder in Logs),
+- erzeugt `run.sh` und trägt den Cronjob (täglich 07:00) zwischen den Markern
+  `# BEGIN diana` / `# END diana` in dianas crontab ein (bestehende Einträge
+  bleiben unangetastet, erneutes Ausführen ersetzt nur diesen Block).
+
 ## Logbuch & Laufartefakte
 
 - Logbuch: lokale Datei `~/agenten/diana/logbuch.md` (dort auch Franks
